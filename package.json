@@ -4,6 +4,11 @@
   "description": "とん平があなたのコーディングを見守ります",
   "version": "0.1.0",
   "publisher": "tompedia-labo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tompedia-Labo/vscode-tompei.git"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
