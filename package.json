@@ -1,0 +1,35 @@
+{
+  "name": "vscode-tompei",
+  "displayName": "とん平",
+  "description": "とん平があなたのコーディングを見守ります",
+  "version": "0.1.0",
+  "publisher": "tompedia-labo",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "tompei.view",
+          "name": "とん平の部屋"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.0.0"
+  }
+}
