@@ -34,7 +34,14 @@ jobs:
           body: |
             ## インストール方法
 
-            1. 下の `vscode-tompei-*.vsix` をダウンロード
-            2. VS Code を開く
-            3. 拡張機能タブの `...` →「VSIXからインストール...」を選択
-            4. ダウンロードしたファイルを選択
+            ターミナルから以下のコマンドを実行すると、常に最新版をインストールできます（初回・アップデート共通）：
+
+            ```bash
+            curl -L -o /tmp/vscode-tompei.vsix https://github.com/Tompedia-Labo/vscode-tompei/releases/latest/download/vscode-tompei.vsix && code --install-extension /tmp/vscode-tompei.vsix && rm /tmp/vscode-tompei.vsix
+            ```
+
+            または、下の `vscode-tompei.vsix` をダウンロードして：
+
+            1. VS Code を開く
+            2. 拡張機能タブの `...` →「VSIXからインストール...」を選択
+            3. ダウンロードしたファイルを選択
