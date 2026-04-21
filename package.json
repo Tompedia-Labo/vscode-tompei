@@ -2,8 +2,9 @@
   "name": "vscode-tompei",
   "displayName": "とん平",
   "description": "とん平があなたのコーディングを見守ります",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "tompedia-labo",
+  "icon": "images/idle.png",
   "license": "MIT",
   "repository": {
     "type": "git",

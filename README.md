@@ -20,10 +20,10 @@
 
 ## インストール方法
 
-ターミナルで以下のコマンドを実行してください：
+ターミナルで以下のコマンドを実行してください（初回・アップデート共通）：
 
 ```bash
-code --install-extension https://github.com/Tompedia-Labo/vscode-tompei/releases/latest/download/vscode-tompei.vsix
+curl -L -o /tmp/vscode-tompei.vsix https://github.com/Tompedia-Labo/vscode-tompei/releases/latest/download/vscode-tompei.vsix && code --install-extension /tmp/vscode-tompei.vsix && rm /tmp/vscode-tompei.vsix
 ```
 
 または、[Releases](https://github.com/Tompedia-Labo/vscode-tompei/releases/latest) ページから `vscode-tompei.vsix` をダウンロードして：
@@ -80,8 +80,7 @@ npm run compile
 ### ローカルへのインストール
 
 ```bash
-npx vsce package --out vscode-tompei.vsix --allow-missing-repository
-code --install-extension vscode-tompei.vsix
+npx vsce package --out vscode-tompei.vsix --allow-missing-repository && code --install-extension vscode-tompei.vsix && rm vscode-tompei.vsix
 ```
 
 ### ブランチ運用
