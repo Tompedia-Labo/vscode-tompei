@@ -2,7 +2,7 @@
   "name": "vscode-tompei",
   "displayName": "とん平",
   "description": "とん平があなたのコーディングを見守ります",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "tompedia-labo",
   "license": "MIT",
   "repository": {
@@ -12,8 +12,12 @@
   "engines": {
     "vscode": "^1.74.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "views": {

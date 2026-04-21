@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { execSync } from 'child_process';
 
 type Mood = 'idle' | 'happy' | 'very_happy' | 'sad';
@@ -41,19 +42,36 @@ function updateStreak(context: vscode.ExtensionContext): { streak: number; sadBe
   return { streak, sadBecauseStreakBroke };
 }
 
+function findGitRepos(rootPath: string): string[] {
+  try {
+    const result = execSync(
+      `find . -name ".git" -type d -not -path "*/node_modules/*" -maxdepth 6`,
+      { cwd: rootPath, encoding: 'utf8', timeout: 5000 }
+    );
+    return result.trim().split('\n')
+      .filter(Boolean)
+      .map(p => path.join(rootPath, path.dirname(p)));
+  } catch {
+    return [rootPath];
+  }
+}
+
 function countTodayCommits(): number {
   const folders = vscode.workspace.workspaceFolders ?? [];
   const today = getToday();
   let total = 0;
   for (const folder of folders) {
-    try {
-      const result = execSync(
-        `git log --oneline --after="${today} 00:00:00" HEAD 2>/dev/null`,
-        { cwd: folder.uri.fsPath, encoding: 'utf8', timeout: 3000 }
-      );
-      total += result.trim() ? result.trim().split('\n').length : 0;
-    } catch {
-      // not a git repo, skip
+    const repos = findGitRepos(folder.uri.fsPath);
+    for (const repoPath of repos) {
+      try {
+        const result = execSync(
+          `git log --oneline --after="${today} 00:00:00" HEAD 2>/dev/null`,
+          { cwd: repoPath, encoding: 'utf8', timeout: 3000 }
+        );
+        total += result.trim() ? result.trim().split('\n').length : 0;
+      } catch {
+        // not a git repo, skip
+      }
     }
   }
   return total;
@@ -157,7 +175,7 @@ function getWebviewContent(
 </div>
 
 <script>
-  const MOOD     = '${mood}';
+  let MOOD       = '${mood}';
   const IMAGES   = ${JSON.stringify(images)};
   const MESSAGES = ${JSON.stringify(messages)};
   const SLEEP_MS = 5 * 60 * 1000;
@@ -274,6 +292,7 @@ function getWebviewContent(
         imgEl.src = IMAGES[MOOD];
         isAnimating = false;
         scheduleSleep();
+        vscode.postMessage({ type: 'requestUpdate' }); // クリック後に最新情報を要求
         return;
       }
       const [sc, ty, sx, sy] = POP_FRAMES[t++];
@@ -290,6 +309,17 @@ function getWebviewContent(
 
   requestAnimationFrame(frame);
   scheduleSleep();
+
+  // 拡張機能からの更新を受信
+  window.addEventListener('message', event => {
+    const { commitsToday, mood } = event.data;
+    document.getElementById('statsBar').textContent =
+      '連続 ${streak} 日 ／ コミット ' + commitsToday + ' 件';
+    if (mood !== MOOD && displayState !== 'clicked' && displayState !== 'sleeping') {
+      MOOD = mood;
+      imgEl.src = IMAGES[MOOD];
+    }
+  });
 </script>
 </body>
 </html>`;
@@ -319,6 +349,21 @@ class TompeiViewProvider implements vscode.WebviewViewProvider {
       this.streak,
       this.commitsToday
     );
+
+    const sendUpdate = () => {
+      const newCommits = countTodayCommits();
+      const newMood = determineMood(this.streak, false, newCommits);
+      webviewView.webview.postMessage({ commitsToday: newCommits, mood: newMood });
+    };
+
+    // クリック時にwebviewからリクエストが来たら更新
+    webviewView.webview.onDidReceiveMessage(msg => {
+      if (msg.type === 'requestUpdate') sendUpdate();
+    });
+
+    // 5分ごとにも自動更新
+    const poll = setInterval(sendUpdate, 5 * 60 * 1000);
+    webviewView.onDidDispose(() => clearInterval(poll));
   }
 }
 

@@ -25,7 +25,7 @@ jobs:
         run: npm run compile
 
       - name: Package extension
-        run: npx vsce package --allow-missing-repository
+        run: npx vsce package --out vscode-tompei.vsix --allow-missing-repository
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
